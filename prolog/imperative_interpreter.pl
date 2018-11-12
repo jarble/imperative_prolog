@@ -1,10 +1,12 @@
-:- initialization(main).
-:- set_prolog_flag('double_quotes','chars').
+:- module(imperative_statements,[imperative_statements/1]).
+:- set_prolog_flag(double_quotes,chars).
 
 main :-
 	imperative_statements((
-		A=1,
+		A=factorial(3),
 		N=0,
+		M = (3 =< 4),
+		M = (3 >= 4),
 		while(A<50,(
 			A=A+2,
 			N=N-1
@@ -17,19 +19,9 @@ main :-
 			N=N*3
 		))
 	)),
+	writeln(N),
 	writeln(A),
-	writeln(N).
-
-increment_var(A,B) :-
-	imperative_statements((
-		B=A,
-		while(B<50,(
-			B=B*2
-		))
-	)).
-
-print(A,true) :-
-	writeln(A).
+	writeln(Z).
 	
 imperative_statements(A) :-
 	term_variables(A,Names),
@@ -112,12 +104,19 @@ get_var((A;B),Vars,Result) :-
 	get_var(B,Vars,B1),call(B1)) -> (Result = true);
 	(get_var(A,Vars,A1),A1=false,Result=false).
 
+get_var(A=<B,Vars,Result) :-
+	get_var(B>=A,Vars,Result).
+get_var(A>=B,Vars,Result) :-
+	%comparison of variables
+	get_var([A,B],Vars,[A1,B1]),
+	(A1>=B1,Result=true;A1<B1,Result=false).
+	
 get_var(A<B,Vars,Result) :-
 	get_var(B>A,Vars,Result).
 get_var(A>B,Vars,Result) :-
 	%comparison of variables
 	get_var([A,B],Vars,[A1,B1]),
-	(A1>B1,Result=true;A1<B1,Result=false).
+	(A1>B1,Result=true;A1=<B1,Result=false).
 	
 get_var(A==B,Vars,Result) :-
 	%comparison of variables
@@ -127,7 +126,7 @@ get_var(A==B,Vars,Result) :-
 get_var(Input,Vars,Output1) :-
 	(\+number(Input)),
 	Input =.. [Name|Params],
-	\+member(Name,['=',==,'->',not,'[|]',',',';',+,-,*,/,**,^,writeln]),
+	\+member(Name,['=',==,'->',not,'[|]',',',';',+,-,*,/,**,^,writeln,<,>,'==']),
 	length(Params,Params_length),
 	Params_length > 0,
 	get_var(Params,Vars,Params1),
