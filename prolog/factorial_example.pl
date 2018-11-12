@@ -5,12 +5,13 @@
 main :-
 	imperative_statements((
 		Z = factorial(3),
-		Z = Z*factorial(Z),
-		_ = print(Z),
+		print(Z*factorial(Z)),
 		M = [1,2,3],
-		M = append(M,M),
-		_ = print(M)
-	)).
+		print(append(M,M) == [1,2,3,1,2,3]),
+		print(sin(6))
+	)),
+	writeln(Z),
+	writeln(M).
 
 factorial(A,A1) :-
 	imperative_statements((
